@@ -9,13 +9,18 @@ App({
     // 登录
     wx.login({
       success: res => {
-        wx.request({
-          url: 'https://werun.applinzi.com',
-          method: 'get',
-          success: function (res) {
-            console.log(res.data);
-          }
-        }) 
+        if(res.code)
+        {
+          wx.request({
+            url: 'http://127.0.0.1:5000/wxusr/'+ res.code,
+            success: function (res) {
+              console.log(res.data);
+            }
+          }) 
+        } else {
+          console.log('wx.login failed!' + res.errMsg)
+        }
+        
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
       }
     })
@@ -42,7 +47,5 @@ App({
   },
   globalData: {
     userInfo: null,
-    appid: 'wx46a8613d76cb807d',
-    secret: 'd76df517b02bba767ec7ca4b9e2950d3'
   }
 })
