@@ -9,13 +9,13 @@ App({
     // 登录
     wx.login({
       success: res => {
-        wx.request({
-          url: 'https://werun.applinzi.com',
-          method: 'get',
-          success: function (res) {
-            console.log(res.data);
-          }
-        }) 
+        // wx.request({
+        //   url: 'https://werun.applinzi.com',
+        //   method: 'get',
+        //   success: function (res) {
+        //     console.log(res.data);
+        //   }
+        // }) 
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
       }
     })

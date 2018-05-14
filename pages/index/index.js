@@ -57,5 +57,17 @@ Page({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
     })
+  },
+  test: function(){
+    console.log("function test")
+    wx.getWeRunData({
+      success(res){
+        console.log(res)
+        const wRunEncryptedData = res.encryptedData
+        // console.log(wRunEncryptedData)
+        
+      }
+    })
   }
+
 })

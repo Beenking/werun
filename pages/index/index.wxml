@@ -7,7 +7,16 @@
       <text class="userinfo-nickname">{{userInfo.nickName}}</text>
     </block>
   </view>
+  
   <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+  <view>
+    <button bindtap='test'>参加运动挑战</button>
+  </view>
+    <!-- <text class="user-motto">{{motto}}</text> -->
   </view>
 </view>
+
+
+<wxs src="common.wxs" module="tools" />
+<view> {{tools.msg}} </view>
+<view> {{tools.bar(tools.FOO)}} </view>
