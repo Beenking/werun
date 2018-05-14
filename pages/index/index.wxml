@@ -17,6 +17,6 @@
 </view>
 
 
-<wxs src="common.wxs" module="tools" />
+<!-- <wxs src="common.wxs" module="tools" />
 <view> {{tools.msg}} </view>
-<view> {{tools.bar(tools.FOO)}} </view>
+<view> {{tools.bar(tools.FOO)}} </view> -->
