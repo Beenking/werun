@@ -17,7 +17,7 @@ Page({
         console.log(encryptedData)
       }
     })
-
+// 链接跳转
     wx.navigateTo({
       url: '../logs/logs'
     })
