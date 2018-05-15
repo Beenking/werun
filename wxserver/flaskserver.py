@@ -14,7 +14,14 @@ from flask import request
 import traceback
 
 # 传递根目录
+import WXBizDataCrypt
+
 app = Flask(__name__)
+
+appid = 'wx46a8613d76cb807d'
+secret = '87a55a5b8627122cfc1b2a82e6030cf0'
+openid = ''  # get after longin
+session_key = ''  # get after login
 
 
 # 默认路径访问登录页面
@@ -102,17 +109,31 @@ def wxusr_login(code):
     url_openid = 'https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s' % (appid, secret, code)
     res = requests.get(url_openid)
     usrid = json.loads(res.content)
+    global openid, session_key
     openid = usrid['openid']
     session_key = usrid['session_key']
-    print(openid)
-    print(session_key)
-    return res.content
+    print('openid: ', openid)
+    print('session_key: ', session_key)
+    return session_key
 
 
-appid = 'wx46a8613d76cb807d'
-secret = '87a55a5b8627122cfc1b2a82e6030cf0'
-openid = ''
-session_key = ''
+@app.route('/getStepData', methods=['POST'])
+def get_step_data():
+    global res
+    if request.method == 'POST':
+        dic = request.form.to_dict()
+        if not appid == '' and not session_key == '':
+            pc = WXBizDataCrypt(appid, session_key)
+            step_data = pc.decrypt(dic['encryptedData'], dic['iv'])
+            print(step_data)
+            res = step_data
+        else:
+            print('appid: ', appid)
+            print('session_key:', session_key)
+            res = ''
+    return json.dumps(res, ensure_ascii=False)
+
+
 # 使用__name__ == '__main__'是 Python 的惯用法，确保直接执行此脚本时才
 # 启动服务器，若其他程序调用该脚本可能父级程序会启动不同的服务器
 if __name__ == '__main__':

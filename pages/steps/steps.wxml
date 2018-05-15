@@ -1,0 +1,10 @@
+<!--logs.wxml-->
+<view class="container step-list">
+   <button class="usermotto" bindtap='getStepData'>
+    <text class="user-motto">{{motto}}</text>
+  </button>
+  <block wx:for="{{steps}}" wx:for-item="step" wx:key="*this">
+    <text class="step-item">{{step.date}}: {{step.step}}步</text>
+  </block>
+</view>
+ 

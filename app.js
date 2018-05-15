@@ -11,18 +11,23 @@ App({
       success: res => {
         if(res.code)
         {
+          // 发送 res.code 到后台换取 openId, sessionKey, unionId
+          var sessionKey = null
           wx.request({
             url: 'http://127.0.0.1:5000/wxusr/'+ res.code,
-            success: function (res) {
-              console.log(res.data);
+            success: res => {                 
+              sessionKey = res.data
+              this.globalData.session_key = res.data
+              console.log(this.globalData.session_key)
             }
-          }) 
+          })
+
         } else {
           console.log('wx.login failed!' + res.errMsg)
-        }
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        }  
       }
     })
+
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -31,8 +36,8 @@ App({
           wx.getUserInfo({
             success: res => {
               // 可以将 res 发送给后台解码出 unionId
+              console.log(res)
               this.globalData.userInfo = res.userInfo
-
               // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
               // 所以此处加入 callback 以防止这种情况
               if (this.userInfoReadyCallback) {
@@ -44,6 +49,7 @@ App({
       }
     })
   },
+
   globalData: {
     userInfo: null,
   }
