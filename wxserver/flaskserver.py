@@ -14,7 +14,7 @@ from flask import request
 import traceback
 
 # 传递根目录
-import WXBizDataCrypt
+from WXBizDataCrypt import WXBizDataCrypt
 
 app = Flask(__name__)
 
