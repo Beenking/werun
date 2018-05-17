@@ -22,7 +22,7 @@ appid = 'wx46a8613d76cb807d'
 secret = '87a55a5b8627122cfc1b2a82e6030cf0'
 openid = ''  # get after longin
 session_key = ''  # get after login
-
+db = pymysql.connect("localhost", "root", "password", "werun")
 
 # 默认路径访问登录页面
 @app.route('/')
@@ -46,10 +46,6 @@ def Response_headers(content):
 # 获取注册请求及处理
 @app.route('/registuser')
 def getRigistRequest():
-    # 把用户名和密码注册到数据库中
-
-    # 连接数据库,此前在数据库中创建数据库TESTDB
-    db = pymysql.connect("localhost", "root", "password", "werun")
     # 使用cursor()方法获取操作游标
     cursor = db.cursor()
     # SQL 插入语句
@@ -76,9 +72,6 @@ def getRigistRequest():
 # 获取登录参数及处理
 @app.route('/login')
 def getLoginRequest():
-    # 查询用户名及密码是否匹配及存在
-    # 连接数据库,此前在数据库中创建数据库TESTDB
-    db = pymysql.connect("localhost", "root", "password", "werun")
     # 使用cursor()方法获取操作游标
     cursor = db.cursor()
     # SQL 查询语句
@@ -132,6 +125,33 @@ def get_step_data():
             print('session_key:', session_key)
             res = ''
     return json.dumps(res, ensure_ascii=False)
+
+@app.route('/ranks', methods=['POST'])
+def get_ranks():
+    cursor = db.cursor()
+    dic = request.form.to_dict()
+    if dic['user'] == 'wb':
+        sql = "select * from rank"
+        try:
+            # 执行sql语句
+            cursor.execute(sql)
+            data = cursor.fetchall()
+            jsonData = []
+            for row in data:
+                result={}
+                result['name'] = row[0]
+                result['steps'] = row[1]
+                result['upvotes'] = row[2]
+                result['avatar'] = row[3]
+                jsonData.append(result)
+            jsondator = json.dumps(jsonData, ensure_ascii=True)
+            return jsondator
+        except:
+            # 如果发生错误则回滚
+            traceback.print_exc()
+            db.rollback()
+    else:
+        return ''
 
 
 # 使用__name__ == '__main__'是 Python 的惯用法，确保直接执行此脚本时才
