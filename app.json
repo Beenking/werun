@@ -2,15 +2,18 @@
   "pages":[
     "pages/index/index",
     "pages/steps/steps",
+    "pages/rank/rank",
     "pages/mine/mine"
   ],
   "window":{
     "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#fff",
+    "navigationBarBackgroundColor": "#000",
     "navigationBarTitleText": "运动挑战",
-    "navigationBarTextStyle":"black"
+    "navigationBarTextStyle":"light"
   },
   "tabBar": {
+    "color":"#bfbfbf",
+    "selectedColor":"#0e932e",
     "list": [
       {
         "pagePath": "pages/index/index",
@@ -21,11 +24,15 @@
         "text": "步数"
       },
       {
+        "pagePath":"pages/rank/rank",
+        "text":"排行",
+        "iconPath":"icon/run.png",
+        "selectedIconPath":"icon/run_active.png"
+      },
+      {
         "pagePath": "pages/mine/mine",
         "text": "我的"
       }
-    ],
-    "selectedColor": "#0000FF"
+    ]
   }
-
 }
