@@ -26,7 +26,7 @@ Page({
         var encryptedData = res.encryptedData
         var iv = res.iv
         wx.request({
-          url: 'http://127.0.0.1:5000/getStepData',
+          url: app.globalData.wxserver + 'getStepData',
           method: 'post',
           header: { 'Content-Type': "application/x-www-form-urlencoded" },
           data:

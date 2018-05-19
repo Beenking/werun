@@ -6,28 +6,6 @@ App({
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
 
-    // 登录
-    wx.login({
-      success: res => {
-        if(res.code)
-        {
-          // 发送 res.code 到后台换取 openId, sessionKey, unionId
-          var sessionKey = null
-          wx.request({
-            url: 'http://127.0.0.1:5000/wxusr/'+ res.code,
-            success: res => {                 
-              sessionKey = res.data
-              this.globalData.session_key = res.data
-              console.log(this.globalData.session_key)
-            }
-          })
-
-        } else {
-          console.log('wx.login failed!' + res.errMsg)
-        }  
-      }
-    })
-
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -48,9 +26,30 @@ App({
         }
       }
     })
+
+    // 登录
+    wx.login({
+      success: res => {
+        if (res.code) {
+          // 发送 res.code 到后台换取 openId, sessionKey, unionId
+          var sessionKey = null
+          wx.request({
+            url: this.globalData.wxserver + 'wxusr/' + res.code,
+            success: res => {
+              sessionKey = res.data
+            }
+          })
+        } else {
+          console.log('wx.login failed!' + res.errMsg)
+        }
+      }
+    })
   },
 
   globalData: {
     userInfo: null,
+    wxserver:'http://66.112.220.247:5000/'
+    //http://127.0.0.1:5000/
+    //http://66.112.220.247:5000/
   }
 })

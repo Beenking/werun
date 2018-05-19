@@ -10,7 +10,7 @@ Page({
 
   onLoad: function () {
     wx.request({
-      url: 'http://127.0.0.1:5000/ranks',
+      url: app.globalData.wxserver + 'ranks',
       method: 'post',
       header: { 'Content-Type': "application/x-www-form-urlencoded" },
       data:{user:'wb'},

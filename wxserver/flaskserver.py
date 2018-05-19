@@ -22,7 +22,7 @@ appid = 'wx46a8613d76cb807d'
 secret = '87a55a5b8627122cfc1b2a82e6030cf0'
 openid = ''  # get after longin
 session_key = ''  # get after login
-db = pymysql.connect("localhost", "root", "password", "werun")
+db = pymysql.connect("localhost", "root", "", "werun")
 
 # 默认路径访问登录页面
 @app.route('/')
@@ -51,7 +51,7 @@ def getRigistRequest():
     # SQL 插入语句
     user = request.args.get('user', type=str)
     password = request.args.get('password', type=str)
-    sql = "INSERT INTO usertable(user, password) VALUES ('%s', '%s')" % (user, password)
+    sql = "INSERT INTO tb_user(user, password) VALUES ('%s', '%s')" % (user, password)
     try:
         # 执行sql语句
         cursor.execute(sql)
@@ -77,7 +77,7 @@ def getLoginRequest():
     # SQL 查询语句
     user = request.args.get('user', type=str)
     password = request.args.get('password', type=str)
-    sql = "select * from usertable where user='%s' and password='%s'" % (user, password)
+    sql = "select * from tb_user where user='%s' and password='%s'" % (user, password)
     try:
         # 执行sql语句
         cursor.execute(sql)
@@ -100,7 +100,7 @@ def getLoginRequest():
 @app.route('/wxusr/<code>')
 def wxusr_login(code):
     url_openid = 'https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s' % (appid, secret, code)
-    res = requests.get(url_openid)
+    res = requests.get(url_openid, verify=False)
     usrid = json.loads(res.content)
     global openid, session_key
     openid = usrid['openid']
@@ -131,7 +131,7 @@ def get_ranks():
     cursor = db.cursor()
     dic = request.form.to_dict()
     if dic['user'] == 'wb':
-        sql = "select * from rank"
+        sql = "select * from tb_rank"
         try:
             # 执行sql语句
             cursor.execute(sql)
