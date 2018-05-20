@@ -137,7 +137,7 @@ def get_step_data():
             pc = WXBizDataCrypt(appid, session_key)
             step_data = pc.decrypt(dic['encryptedData'], dic['iv'])
 
-            step_today = step_data['stepInfoList'][29]['step'];
+            step_today = step_data['stepInfoList'][-1]['step'];
             sql = "UPDATE tb_user SET steps=%d WHERE openid='%s'" % (step_today, openid)
             print(sql)
             cursor = db.cursor()
