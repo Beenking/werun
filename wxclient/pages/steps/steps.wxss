@@ -1,0 +1,8 @@
+.step-list {
+  display: flex;
+  flex-direction: column;
+  padding: 40rpx;
+}
+.step-item {
+  margin: 10rpx;
+}

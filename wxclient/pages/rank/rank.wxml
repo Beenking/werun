@@ -1,0 +1,12 @@
+<view>
+  <view class="message-item" wx:for="{{ranks}}" wx:key="{{index}}">
+    <view class='index'>{{index + 1}}</view>
+    <image class='avator' src='{{item.avatar}}'></image>
+    <view class='name'>{{item.name}}</view>
+    <view class='steps'>{{item.steps}}</view>
+    <view class='upvote-group'> 
+      <view class='upvote-num'>{{item.upvotes}}</view>
+      <image class='upvote-img' src='/icon/upvote.png'></image>
+    </view>
+  </view>
+</view>
