@@ -11,11 +11,13 @@ Page({
   },
 
   onLoad: function () {
+    console.log('Page steps Enter')
     this.setData({
       logs: (wx.getStorageSync('logs') || []).map(log => {
         return util.formatTime(new Date(log))
       })
     })
+    console.log('Page index Leave')
   },
 
   //获取encryptedData（没有解密的步数）和iv（加密算法的初始向量）

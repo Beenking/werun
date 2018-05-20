@@ -11,6 +11,7 @@ Page({
   },
 
   onLoad: function () {
+    console.log('Page index Enter')
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,
@@ -37,9 +38,10 @@ Page({
         }
       })
     }
+    console.log('Page index Leave')
   },
 
-  getUserInfo: function (e) {
+  getUserData: function (e) {
     console.log(e)
     app.globalData.userInfo = e.detail.userInfo
     this.setData({

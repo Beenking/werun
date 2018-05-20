@@ -9,6 +9,7 @@ Page({
   },
 
   onLoad: function () {
+    console.log('Page rank Enter')
     wx.request({
       url: app.globalData.wxserver + 'ranks',
       method: 'post',
@@ -26,5 +27,6 @@ Page({
         }
       }
     })
+    console.log('Page rank Leave')
   }
 })

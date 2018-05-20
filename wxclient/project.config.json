@@ -13,7 +13,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "1.9.98",
 	"appid": "wx46a8613d76cb807d",
-	"projectname": "werun",
+	"projectname": "werun_client",
 	"isGameTourist": false,
 	"condition": {
 		"search": {
