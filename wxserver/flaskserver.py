@@ -22,7 +22,8 @@ appid = 'wx46a8613d76cb807d'
 secret = '87a55a5b8627122cfc1b2a82e6030cf0'
 openid = ''  # get after longin
 session_key = ''  # get after login
-db = pymysql.connect("localhost", "root", "", "werun")
+db = pymysql.connect("localhost", "root", "", "werun", charset="utf8")
+
 
 # 默认路径访问登录页面
 @app.route('/')
@@ -51,7 +52,7 @@ def getRigistRequest():
     # SQL 插入语句
     user = request.args.get('user', type=str)
     password = request.args.get('password', type=str)
-    sql = "INSERT INTO tb_user(user, password) VALUES ('%s', '%s')" % (user, password)
+    sql = "INSERT INTO temp_user(user, password) VALUES ('%s', '%s')" % (user, password)
     try:
         # 执行sql语句
         cursor.execute(sql)
@@ -97,17 +98,34 @@ def getLoginRequest():
     db.close()
 
 
-@app.route('/wxusr/<code>')
-def wxusr_login(code):
+@app.route('/wxusr', methods=['POST'])
+def wxusr_login():
+    # get openid and session_key with code from weixin api server
+    code = request.form['code']
     url_openid = 'https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s' % (appid, secret, code)
     res = requests.get(url_openid, verify=False)
-    usrid = json.loads(res.content)
+    dict_user_id = json.loads(res.content)
     global openid, session_key
-    openid = usrid['openid']
-    session_key = usrid['session_key']
-    print('openid: ', openid)
-    print('session_key: ', session_key)
-    return session_key
+    openid = dict_user_id['openid']
+    session_key = dict_user_id['session_key']
+
+    dict_user_info = {}
+    user_info = request.form['userInfo']
+    dict_user_info = json.loads(s=user_info)
+    dict_user_info['openid'] = openid
+    dict_user_info['session_key'] = session_key
+    d = dict_user_info
+    print(dict_user_info)
+    sql = "INSERT INTO tb_user(openid,session_Key,nickName,gender,language,city,province,country,avatarUrl) " \
+          "VALUES('%s','%s','%s',%d,'%s','%s','%s','%s','%s') ON DUPLICATE KEY UPDATE nickName='%s'" \
+          % (d['openid'], d['session_key'], d['nickName'], d['gender'], d['language'], d['city'], d['province'],
+             d['country'], d['avatarUrl'], d['nickName'])
+    cursor = db.cursor()
+    # 执行sql语句
+    cursor.execute(sql)
+    # 提交到数据库执行
+    db.commit()
+    return "success"
 
 
 @app.route('/getStepData', methods=['POST'])
@@ -118,6 +136,16 @@ def get_step_data():
         if not appid == '' and not session_key == '':
             pc = WXBizDataCrypt(appid, session_key)
             step_data = pc.decrypt(dic['encryptedData'], dic['iv'])
+
+            step_today = step_data['stepInfoList'][29]['step'];
+            sql = "UPDATE tb_user SET steps=%d WHERE openid='%s'" % (step_today, openid)
+            print(sql)
+            cursor = db.cursor()
+            # 执行sql语句
+            cursor.execute(sql)
+            # 提交到数据库执行
+            db.commit()
+
             print(step_data)
             res = step_data
         else:
@@ -126,19 +154,20 @@ def get_step_data():
             res = ''
     return json.dumps(res, ensure_ascii=False)
 
+
 @app.route('/ranks', methods=['POST'])
 def get_ranks():
     cursor = db.cursor()
     dic = request.form.to_dict()
     if dic['user'] == 'wb':
-        sql = "select * from tb_rank"
+        sql = "select nickName, steps, upvotes, avatarUrl  from tb_user"
         try:
             # 执行sql语句
             cursor.execute(sql)
             data = cursor.fetchall()
             jsonData = []
             for row in data:
-                result={}
+                result = {}
                 result['name'] = row[0]
                 result['steps'] = row[1]
                 result['upvotes'] = row[2]

@@ -11,7 +11,7 @@ Page({
   },
 
   onLoad: function () {
-    console.log('Page index Enter')
+    console.log('Page index OnLoad Enter')
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,
@@ -38,7 +38,7 @@ Page({
         }
       })
     }
-    console.log('Page index Leave')
+    console.log('Page index OnLoad Leave')
   },
 
   getUserData: function (e) {
