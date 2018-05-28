@@ -22,7 +22,7 @@ Page({
 
   RefreshRank: function() {
     wx.request({
-      url: app.globalData.wxserver + 'ranks',
+      url: app.globalData.wxserver + 'api/ranks',
       method: 'post',
       header: { 'Content-Type': "application/x-www-form-urlencoded" },
       data: { user: 'wb' },

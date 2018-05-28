@@ -41,7 +41,11 @@ App({
                     userInfo: this.globalData.userInfo
                   },
                   success: res => {
-                    console.log('user login server sucessed!')
+                    if(res){
+                      console.log(res.data + ' user login server sucessed!')
+                      this.globalData.login_session_token = res.data;
+                      wx.setStorageSync('LoginSessionToken', res.data)
+                    }                   
                   }
                 })
               } else {
@@ -58,7 +62,8 @@ App({
 
   globalData: {
     userInfo: null,
-    wxserver:'http://66.112.220.247:5000/'
+    login_session_token:'',
+    wxserver:'http://127.0.0.1:5000/'
     //http://127.0.0.1:5000/
     //http://66.112.220.247:5000/
   }

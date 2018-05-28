@@ -23,7 +23,8 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `tb_user`;
 CREATE TABLE `tb_user` (
   `openid` char(40) NOT NULL,
-  `session_Key` char(40) DEFAULT NULL,
+  `sessionKey` char(40) DEFAULT NULL,
+  `token` char(50) DEFAULT NULL,
   `nickName` varchar(40) CHARACTER SET utf8 DEFAULT NULL,
   `gender` tinyint(1) DEFAULT NULL,
   `language` char(10) DEFAULT NULL,
