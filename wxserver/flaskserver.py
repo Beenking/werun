@@ -1,6 +1,8 @@
 #!/usr/bin/python3.5
 # -*- coding: UTF-8 -*-
 # 导入数据库模块
+import datetime
+import random
 import pymysql
 import requests
 import json
@@ -20,8 +22,6 @@ app = Flask(__name__)
 
 appid = 'wx46a8613d76cb807d'
 secret = '87a55a5b8627122cfc1b2a82e6030cf0'
-openid = ''  # get after longin
-session_key = ''  # get after login
 db = pymysql.connect("localhost", "root", "", "werun", charset="utf8")
 
 
@@ -105,7 +105,6 @@ def wxusr_login():
     url_openid = 'https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s' % (appid, secret, code)
     res = requests.get(url_openid, verify=False)
     dict_user_id = json.loads(res.content)
-    global openid, session_key
     openid = dict_user_id['openid']
     session_key = dict_user_id['session_key']
 
@@ -114,39 +113,48 @@ def wxusr_login():
     dict_user_info = json.loads(s=user_info)
     dict_user_info['openid'] = openid
     dict_user_info['session_key'] = session_key
+    dict_user_info['token'] = 'user_'+ ''.join(random.sample(openid, len(openid))) + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     d = dict_user_info
-    print(dict_user_info)
-    sql = "INSERT INTO tb_user(openid,session_Key,nickName,gender,language,city,province,country,avatarUrl) " \
-          "VALUES('%s','%s','%s',%d,'%s','%s','%s','%s','%s') ON DUPLICATE KEY UPDATE nickName='%s'" \
-          % (d['openid'], d['session_key'], d['nickName'], d['gender'], d['language'], d['city'], d['province'],
-             d['country'], d['avatarUrl'], d['nickName'])
+    # 没有记录则插入，有则选择更新
+    sql = "INSERT INTO tb_user(openid,sessionKey,token,nickName,gender,language,city,province,country,avatarUrl) " \
+          "VALUES('%s','%s', '%s','%s',%d,'%s','%s','%s','%s','%s') ON DUPLICATE KEY UPDATE " \
+          "sessionKey='%s',token='%s',nickName='%s'" \
+          % (d['openid'], d['session_key'], d['token'], d['nickName'], d['gender'], d['language'], d['city'], d['province'],
+             d['country'], d['avatarUrl'], d['session_key'], d['token'], d['nickName'])
+    print(sql)
     cursor = db.cursor()
     # 执行sql语句
     cursor.execute(sql)
     # 提交到数据库执行
     db.commit()
-    return "success"
+    return dict_user_info['token']
 
 
-@app.route('/getStepData', methods=['POST'])
+@app.route('/api/steps', methods=['POST'])
 def get_step_data():
     global res
     if request.method == 'POST':
+        cursor = db.cursor()
         dic = request.form.to_dict()
+        token = request.form['token']
+        sql_token = "SELECT sessionKey FROM tb_user WHERE token='%s'" % token
+        print(sql_token)
+        cursor.execute(sql_token)
+        sql_result = cursor.fetchall()
+        session_key = sql_result[0][0]
+        db.commit()
+
         if not appid == '' and not session_key == '':
             pc = WXBizDataCrypt(appid, session_key)
             step_data = pc.decrypt(dic['encryptedData'], dic['iv'])
 
-            step_today = step_data['stepInfoList'][29]['step'];
-            sql = "UPDATE tb_user SET steps=%d WHERE openid='%s'" % (step_today, openid)
-            print(sql)
-            cursor = db.cursor()
-            # 执行sql语句
-            cursor.execute(sql)
-            # 提交到数据库执行
-            db.commit()
+            step_today = step_data['stepInfoList'][-1]['step'];
+            sql_update_steps = "UPDATE tb_user SET steps=%d WHERE token='%s'" % (step_today, token)
+            print(sql_update_steps)
 
-            print(step_data)
+            # 执行sql语句，提交到数据库执行
+            cursor.execute(sql_update_steps)
+            db.commit()
             res = step_data
         else:
             print('appid: ', appid)
@@ -155,12 +163,13 @@ def get_step_data():
     return json.dumps(res, ensure_ascii=False)
 
 
-@app.route('/ranks', methods=['POST'])
+@app.route('/api/ranks', methods=['POST'])
 def get_ranks():
     cursor = db.cursor()
     dic = request.form.to_dict()
     if dic['user'] == 'wb':
         sql = "select nickName, steps, upvotes, avatarUrl  from tb_user"
+        print(sql)
         try:
             # 执行sql语句
             cursor.execute(sql)

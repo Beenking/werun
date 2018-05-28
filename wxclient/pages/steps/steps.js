@@ -27,14 +27,16 @@ Page({
         console.log(res);
         var encryptedData = res.encryptedData
         var iv = res.iv
+        var token = wx.getStorageSync('LoginSessionToken', res.data)
         wx.request({
-          url: app.globalData.wxserver + 'getStepData',
+          url: app.globalData.wxserver + 'api/steps',
           method: 'post',
           header: { 'Content-Type': "application/x-www-form-urlencoded" },
           data:
           {
             iv: iv,
-            encryptedData: encryptedData
+            encryptedData: encryptedData,
+            token: token
           },
           success: res => {
             if (res) {
